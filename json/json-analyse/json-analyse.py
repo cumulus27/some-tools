@@ -78,7 +78,22 @@ class JsonAnalyse(object):
     def set_input_value(self, i, value):
         """改变第i个参数的值为value"""
         self.changed_json = copy.deepcopy(self.json)
-        change_path = "self.changed_json[\"" + "\"][\"".join(self.value_list[i]) + "\"]=value"
+        change_path = "self.changed_json"
+
+        item = ""
+        for item in self.value_list[i]:
+            if isinstance(item, str):
+                change_path = change_path + "[\"" + item + "\"]"
+            else:
+                change_path = change_path + "[" + str(item) + "]"
+        else:
+            if isinstance(item, str):
+                change_path = change_path + "=value"
+            else:
+                change_path = change_path + "=value"
+
+
+
         exec(change_path)
         self.changed_request = json.dumps(self.changed_json, separators=(',', ':'))
 
@@ -97,7 +112,7 @@ if __name__ == "__main__":
     analysis.show_beautiful()
 
     analysis.start_analyse()
-    # analysis.show_value_list()
+    analysis.show_value_list()
 
     print(analysis.input_count())
 
@@ -105,4 +120,4 @@ if __name__ == "__main__":
 
     print(analysis.item(5))
 
-    analysis.set_input_value(5, "Hello world.")
+    analysis.set_input_value(55, "Hello world.")
