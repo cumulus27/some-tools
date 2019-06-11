@@ -6,6 +6,7 @@
 
 import json
 import copy
+from collections import abc
 
 
 class JsonAnalyse(object):
@@ -32,6 +33,17 @@ class JsonAnalyse(object):
                 print(f"TypeError in json load: {e}")
                 raise RuntimeError
 
+    def load_json_file(self, path):
+        try:
+            with open(path, "r") as f:
+                self.json = json.load(f)
+        except IOError as e:
+            print(f"IOError in file read: {e}")
+            raise RuntimeError
+        except TypeError as e:
+            print(f"TypeError in json load: {e}")
+            raise RuntimeError
+
     def show_beautiful(self):
         print(json.dumps(self.json, sort_keys=True, indent=4))
 
@@ -42,13 +54,13 @@ class JsonAnalyse(object):
         del self.value_list[-1]
 
     def get_next_branch(self, parent, path):
-        if isinstance(parent, dict):
+        if isinstance(parent, abc.Mapping):
             for key, value in parent.items():
                 new_path = copy.deepcopy(path)
                 new_path.append(key)
                 # print(new_path)
                 self.get_next_branch(value, new_path)
-        elif isinstance(parent, list):
+        elif isinstance(parent, abc.MutableSequence):
             for index, item in enumerate(parent):
                 new_path = copy.deepcopy(path)
                 new_path.append(index)
@@ -69,7 +81,7 @@ class JsonAnalyse(object):
 
     def get_input_name(self, i):
         """获取name"""
-        return "-".join(self.value_list[i])
+        return "-".join([str(index) for index in self.value_list[i]])
 
     def item(self, i):
         """获取value"""
@@ -87,12 +99,7 @@ class JsonAnalyse(object):
             else:
                 change_path = change_path + "[" + str(item) + "]"
         else:
-            if isinstance(item, str):
-                change_path = change_path + "=value"
-            else:
-                change_path = change_path + "=value"
-
-
+            change_path = change_path + "=value"
 
         exec(change_path)
         self.changed_request = json.dumps(self.changed_json, separators=(',', ':'))
@@ -104,20 +111,22 @@ class JsonAnalyse(object):
 
 if __name__ == "__main__":
 
-    file_path = "sample.txt"
+    file_path = "osconfeed.json"
 
     analysis = JsonAnalyse()
-    analysis.load_json(file_path)
-
-    analysis.show_beautiful()
+    # analysis.load_json(file_path)
+    analysis.load_json_file(file_path)
+    # analysis.show_beautiful()
 
     analysis.start_analyse()
     analysis.show_value_list()
 
     print(analysis.input_count())
 
-    print(analysis.get_input_name(5))
+    print(analysis.get_input_name(10))
 
-    print(analysis.item(5))
+    print(analysis.item(10))
 
-    analysis.set_input_value(55, "Hello world.")
+    print(type(analysis.json))
+
+    # analysis.set_input_value(55, "Hello world.")
