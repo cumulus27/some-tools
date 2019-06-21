@@ -1,0 +1,13 @@
+find / -type f -perm 777 2>/dev/null
+
+find / -type f -perm -o+r 2>/dev/null
+find / -type f -perm /o=r 2>/dev/null
+
+find / -type f -perm -o+w 2>/dev/null
+find / -type f -perm /o=w 2>/dev/null
+
+find / -type f -perm -u+s 2>/dev/null
+find / -type f -perm /u=s 2>/dev/null
+
+find / -type f -perm -g+s 2>/dev/null
+find / -type f -perm /g=s 2>/dev/null
