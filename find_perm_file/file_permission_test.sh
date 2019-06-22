@@ -46,11 +46,11 @@ fi
 if [[ -z ${number} ]]
 then
     echo "Set user: $user, permission: $perm, Set path: $path"
-    ${head}find ${path} -type f -perm /${user}=${perm} 2>${result_path}/error_${user}${perm}.txt 1>${result_path}/result_${user}${perm}.txt
+    ${head}find ${path} -type f -perm /${user}=${perm} -exec ls -l {} 2>${result_path}/error_${user}${perm}.txt 1>${result_path}/result_${user}${perm}.txt \;
     echo "Run command finished, see result in ${result_path}/result_${user}${perm}.txt"
 else
     echo "Set permission: $number, Set path: $path"
-    ${head}find ${path} -type f -perm ${number} 2>${result_path}/error_${number}.txt 1>${result_path}/result_${number}.txt
+    ${head}find ${path} -type f -perm ${number} -exec ls -l {} 2>${result_path}/error_${number}.txt 1>${result_path}/result_${number}.txt \;
     echo "Run command finished, see result in ${result_path}/result_${number}.txt"
 fi
 
