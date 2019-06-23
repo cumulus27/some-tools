@@ -9,7 +9,6 @@ import time
 import urllib
 import urllib.parse
 import urllib.request
-import requests
 
 from bs4 import BeautifulSoup
 
@@ -21,8 +20,9 @@ from selenium.webdriver.support import expected_conditions as EC # available sin
 
 class PaperList:
 
-    def __init__(self, url):
-        self.url = url
+    def __init__(self, urls, path):
+        self.url = urls
+        self.path = path
         self.source = None
         self.soup = None
 
@@ -52,11 +52,13 @@ class PaperList:
 
     def get_the_site(self):
         self.get_first_page()
+        self.soup = BeautifulSoup(self.source, "html.parser")
+        self.start_analysis()
 
         while True:
+            self.get_next_page()
             self.soup = BeautifulSoup(self.source, "html.parser")
             self.start_analysis()
-            self.get_next_page()
             if self.is_end:
                 break
 
@@ -86,25 +88,52 @@ class PaperList:
         self.page_now = self.driver.find_element_by_class_name("res-page-number-now")
         print(f"Page : {self.page_now.get_attribute('data-num')}")
 
+        # Get the page source
+        self.source = self.driver.page_source
+
         next_button = self.driver.find_element_by_class_name("c-icon-page-next-hover")
         style = next_button.get_attribute('style')
         if style:
             self.is_end = True
 
     def start_analysis(self):
-        h3s = self.soup.find_all("h3", "res_t")
-        for h3 in h3s:
-            a = h3.find("a")
-            print(a.string)
+        divs = self.soup.find_all("div", "res_con")
+        for div in divs:
+            h3 = div.find("h3", "res_t")
+            print(h3.a.string, end=" -> ")
+            str_w = h3.a.string + " -> "
 
-    def save_in_file(self):
-        pass
+            info = div.find("div", "res_info")
+            year = info.find("span", "res_year")
+            print(year.string, end=" -> ")
+            str_w = str_w + year.string + " -> "
+
+            spans = info.find_all("span")
+            names = spans[1].find_all("a")
+            for name in names:
+                if not name.string:
+                    break
+                print(name.string, end=", ")
+                str_w = str_w + name.string + ", "
+            else:
+                print("\b\b")
+                str_w = str_w
+            str_w = str_w + "\n"
+            self.save_in_file(str_w)
+
+    def save_in_file(self, str_w):
+        try:
+            with open(self.path, "a+") as f:
+                f.write(str_w)
+        except IOError as e:
+            print(f"Fail to write: {str_w}\nAs error {e}")
 
 
 if __name__ == "__main__":
 
     url = "http://xueshu.baidu.com/scholarID/CN-BH740BDJ"
-    get = PaperList(url)
+    result_path = "data/list.txt"
+    get = PaperList(url, result_path)
 
     get.get_the_site()
 

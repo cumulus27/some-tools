@@ -108,3 +108,6 @@ venv.bak/
 
 # data in file permission
 find_perm_file/data/
+
+# data in paper get
+paper_get/data/
