@@ -6,6 +6,7 @@
 
 import os
 import time
+import random
 import urllib
 import urllib.parse
 import urllib.request
@@ -60,7 +61,7 @@ class PaperDownload:
         pass
 
     def get_the_cite(self):
-        pass
+        div0 = self.soup.find("div", "gs_res_ccl_mid")
 
     def start_download(self):
         while True:
@@ -91,7 +92,7 @@ class PaperDownload:
 
     @classmethod
     def wait_random_time(cls):
-        pass
+        time.sleep(random.uniform(1, 4))
 
 
 if __name__ == "__main__":
