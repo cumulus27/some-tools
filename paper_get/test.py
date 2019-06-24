@@ -16,8 +16,6 @@ print(driver.title)
 # find the element that's name attribute is q (the google search box)
 inputElement = driver.find_element_by_name("wd")
 
-next_page = driver.find_element_by_class_name()
-
 # type in the search
 inputElement.send_keys("罗永浩")
 
