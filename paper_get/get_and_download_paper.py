@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
 
@@ -27,7 +28,11 @@ class PaperDownload:
         self.title_gen = self.get_one_paper_title(title_list)
 
     def open_the_site(self):
-        driver = webdriver.Chrome("tools/chromedriver")
+        options = Options()
+        # options.headless = True  # do not open UI
+        options.add_argument('--proxy-server=socks5://127.0.0.1:1080')
+
+        driver = webdriver.Chrome("tools/chromedriver", chrome_options=options)
         driver.get("https://scholar.google.com")
         self.driver = driver
 
@@ -44,7 +49,12 @@ class PaperDownload:
             input_element.send_keys(real_title)
             input_element.submit()
 
-            self.source = self.driver.page_source
+            try:
+                WebDriverWait(self.driver, 10).until(EC.title_contains(real_title))
+            except TimeoutException:
+                pass
+            else:
+                self.source = self.driver.page_source
 
     def download_paper(self):
         pass
@@ -54,6 +64,7 @@ class PaperDownload:
 
     def start_download(self):
         while True:
+            self.wait_random_time()
             try:
                 self.send_the_search()
             except StopIteration:
@@ -62,7 +73,11 @@ class PaperDownload:
                 break
             else:
                 self.soup = BeautifulSoup(self.source, "html.parser")
+
+                self.wait_random_time()
                 self.get_the_cite()
+
+                self.wait_random_time()
                 self.download_paper()
 
     @classmethod
@@ -74,10 +89,15 @@ class PaperDownload:
                     raise StopIteration
                 yield name
 
+    @classmethod
+    def wait_random_time(cls):
+        pass
+
 
 if __name__ == "__main__":
 
-    tile_list = "data/list.txt"
+    tile_list = "data/test_list.txt"
     down = PaperDownload(tile_list)
 
+    down.open_the_site()
     down.start_download()
