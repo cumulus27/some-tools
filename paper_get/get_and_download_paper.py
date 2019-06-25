@@ -168,13 +168,19 @@ class PaperDownload:
         download_url = ""
         try:
             download_url = download_a.get('href')
-        except TypeError:
+        except AttributeError:
             print("This paper does't have url")
             download_url = self.real_title + "  [X]"
         finally:
             self.write_in_file(url_path, download_url + "\n")
 
-        time.sleep(2)
+        try:
+            WebDriverWait(self.driver, 10).until(EC.url_contains("gs_cit"))
+        except TimeoutException:
+            print("Timeout when open cite")
+            raise RuntimeError
+        else:
+            self.source = self.driver.page_source
 
         self.source = self.driver.page_source
         self.soup = BeautifulSoup(self.source, "html.parser")
@@ -229,18 +235,24 @@ class PaperDownload:
 
     @classmethod
     def wait_random_time(cls):
-        time.sleep(random.uniform(0.5, 2.5))
+        time.sleep(random.uniform(0.5, 2))
 
 
 if __name__ == "__main__":
     name_en = "S Wang"
     name_ch = "王爽"
     tile_list = "data/test_list.txt"
+    # tile_list = "data/list.txt"
 
-    cite_path = "data/result/cite.txt"
-    url_path = "data/result/url.txt"
+    result_path = "data2/result/"
+    try:
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+    except Exception as e:
+        print("Error in create path: {}".format(e))
 
-    
+    cite_path = result_path + "cite.txt"
+    url_path = result_path + "url.txt"
 
     down = PaperDownload(tile_list, [name_en, name_ch], cite_path, url_path)
 

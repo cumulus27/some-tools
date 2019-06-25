@@ -132,8 +132,15 @@ class PaperList:
 if __name__ == "__main__":
 
     url = "http://xueshu.baidu.com/scholarID/CN-BH740BDJ"
-    result_path = "data/list.txt"
-    get = PaperList(url, result_path)
+    result_path = "data2/"
+
+    try:
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+    except Exception as e:
+        print("Error in create path: {}".format(e))
+
+    get = PaperList(url, result_path + "list.txt")
 
     get.get_the_site()
 
