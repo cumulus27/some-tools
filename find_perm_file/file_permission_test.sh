@@ -4,10 +4,13 @@
 # exec 1>result.txt
 # exec 2>error.txt
 
+set -x
+
 user="u"
 perm="w"
 path="."
 head=""
+tail="\\;"
 number=""
 result_path=data
 
@@ -21,8 +24,10 @@ do
       w) perm="w" ;;
       x) perm="x" ;;
       s) perm="s" ;;
-      a) head="adb shell" ;;
-      l) head="" ;;
+      a) head="adb shell \""
+         tail="\\\\;\"" ;;
+      l) head=""
+         tail="\\;" ;;
       p) path=$OPTARG ;;
       n) number=$OPTARG ;;
       *) echo "Unknown option: $opt" >&2 ;;
@@ -46,11 +51,13 @@ fi
 if [[ -z ${number} ]]
 then
     echo "Set user: $user, permission: $perm, Set path: $path"
-    ${head}find ${path} -type f -perm /${user}=${perm} -exec ls -l {} 2>${result_path}/error_${user}${perm}.txt 1>${result_path}/result_${user}${perm}.txt \;
+#    ${head}find ${path} -type f -perm /${user}=${perm} -exec ls -l {} 2>${result_path}/error_${user}${perm}.txt 1>${result_path}/result_${user}${perm}.txt ${tail}
+    eval "${head}find ${path} -type f -perm /${user}=${perm} -exec ls -l {} ${tail} 2>${result_path}/error_${user}${perm}.txt 1>${result_path}/result_${user}${perm}.txt"
     echo "Run command finished, see result in ${result_path}/result_${user}${perm}.txt"
 else
     echo "Set permission: $number, Set path: $path"
-    ${head}find ${path} -type f -perm ${number} -exec ls -l {} 2>${result_path}/error_${number}.txt 1>${result_path}/result_${number}.txt \;
+#    ${head}find ${path} -type f -perm ${number} -exec ls -l {} 2>${result_path}/error_${number}.txt 1>${result_path}/result_${number}.txt ${tail}
+    eval "${head}find ${path} -type f -perm ${number} -exec ls -l {} ${tail} 2>${result_path}/error_${number}.txt 1>${result_path}/result_${number}.txt"
     echo "Run command finished, see result in ${result_path}/result_${number}.txt"
 fi
 
