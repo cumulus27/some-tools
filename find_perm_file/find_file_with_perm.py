@@ -6,11 +6,12 @@
 
 import os
 import re
+import time
 import subprocess
 
 
 class PermissionFind:
-    def __init__(self, path_r, device_id=None, path="/", shell=False):
+    def __init__(self, path_r, device_id=None, path="/", shell=False, skip_proc=True):
         self.path_r = path_r
         self.device_id = device_id
 
@@ -18,6 +19,7 @@ class PermissionFind:
         self.second_command = None
         self.path = path
         self.shell = shell
+        self.skip_proc = skip_proc
 
         self.error_log_path = os.path.join(self.path_r, "error_log.txt")
 
@@ -25,7 +27,7 @@ class PermissionFind:
         full_command = " ".join([self.second_command, "-type f -perm /o=r -exec ls -l '{}' \;"])
         print(full_command)
 
-        file_path = os.path.join(self.path_r, f"global_read_{self.device_id}")
+        file_path = os.path.join(self.path_r, f"global_read_{self.device_id}.txt")
         self.process_command(file_path, full_command)
 
     def find_global_write(self):
@@ -33,7 +35,7 @@ class PermissionFind:
         full_command = " ".join([self.second_command, "-type f -perm /o=w -exec ls -l '{}' \;"])
         print(full_command)
 
-        file_path = os.path.join(self.path_r, f"global_write_{self.device_id}")
+        file_path = os.path.join(self.path_r, f"global_write_{self.device_id}.txt")
         self.process_command(file_path, full_command)
 
     def find_777(self):
@@ -44,7 +46,7 @@ class PermissionFind:
         self.process_command(file_path, full_command)
 
     def find_suid(self, file_path):
-        us_re = re.compile("[r-][w-][sStTw][r-][w-].[r-][w-].")
+        us_re = re.compile("[r-][w-][sStT][r-][w-].[r-][w-].")
         path_result = os.path.join(self.path_r, f"suid_{self.device_id}.txt")
 
         try:
@@ -58,7 +60,7 @@ class PermissionFind:
             print(e)
 
     def find_guid(self, file_path):
-        us_re = re.compile("[r-][w-].[r-][w-][sStTw][r-][w-].")
+        us_re = re.compile("[r-][w-].[r-][w-][sStT][r-][w-].")
         path_result = os.path.join(self.path_r, f"guid_{self.device_id}.txt")
 
         try:
@@ -97,7 +99,9 @@ class PermissionFind:
     def start_find(self, command):
         self.first_command = command
         print(self.first_command)
-        self.second_command = f"find"
+        self.second_command = f"find {self.path}"
+        if self.skip_proc:
+            self.second_command = " ".join([self.second_command, "-path /proc -prune -o"])
 
         self.find_global_read()
         self.find_global_write()
@@ -169,5 +173,10 @@ if __name__ == "__main__":
     except Exception as e:
         print("Error in create path: {}".format(e))
 
+    start_time = time.time()
     find = PermissionFind(result_path)
     find.start_test()
+    cost_time = time.time() - start_time
+
+    print(f"\nTest complete, cost {cost_time:.2f}s.")
+
