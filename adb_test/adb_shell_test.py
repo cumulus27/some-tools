@@ -20,8 +20,12 @@ class PermissionFind:
 
         self.command_iter = self.get_one_test_command(command_file)
 
+        self._id = 0
+
     def prepare_the_command(self):
         full_command = self.second_command
+        self._id += 1
+        print(self._id, end=", ")
         print(full_command)
 
         self.process_command(full_command)

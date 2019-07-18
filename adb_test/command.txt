@@ -1,0 +1,2 @@
+# com.android.modem.service
+find /sdcard/ -type d -name [Ss]d_logs
