@@ -111,6 +111,7 @@ find_perm_file/data/
 
 # data in paper get
 paper_get/data/
+paper_get/data2/
 
 # data in drozer get
 get_drozer_result_apk/data/
