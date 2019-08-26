@@ -42,7 +42,10 @@ class PaperDownload:
 
         driver = webdriver.Chrome("tools/chromedriver", chrome_options=options)
         # driver.get("https://scholar.google.com")
-        driver.get("https://e.glgoo.top/scholar/")
+        # driver.get("https://e.glgoo.top/scholar/")
+        driver.get("http://so.hiqq.com.cn/")
+        # driver.get("https://b.glgoo.top/scholar/")
+        # driver.get("https://xue.glgoo.org/")
         self.driver = driver
 
     def send_the_search(self):
@@ -55,19 +58,39 @@ class PaperDownload:
             print(self.real_title)
 
             input_element = self.driver.find_element_by_name("q")
-            print("1")
+            print("1", end=" ")
             input_element.clear()
-            print("2")
+            print("2", end=" ")
             input_element.send_keys(self.real_title)
-            print("3")
-            input_element.submit()
-            print("4")
+            print("3", end=" ")
 
-            first_word = self.real_title.split(" ")[0]
-            print(first_word)
+            # button = self.driver.find_element_by_id("gs_hdr_tsb")
+            # button.click()
+            input_element.submit()
+            print("4", end=" ")
+
+            # first_word = self.real_title.split(" ")[0]
+            # print(first_word)
+            check_world = self.real_title[:10]
+            # print(check_world)
+
+            # If the search create new tab.
+            if "HiQQ" in self.driver.title:
+                windows = self.driver.current_window_handle  # 定位当前页面句柄
+                all_handles = self.driver.window_handles  # 获取全部页面句柄
+                for handle in all_handles:  # 遍历全部页面句柄
+                    if handle != windows:  # 判断条件
+                        # self.driver.close()
+                        self.driver.switch_to.window(handle)  # 切换到新页面
+                        print("5+", end=" ")
+            else:
+                print("5-", end=" ")
 
             try:
-                WebDriverWait(self.driver, 5).until(EC.title_contains(first_word))
+                # WebDriverWait(self.driver, 5).until(EC.title_contains(first_word))
+                # WebDriverWait(self.driver, 10).until(EC.title_contains(check_world))
+                time.sleep(2)
+                print("6")
             except TimeoutException:
                 print("Timeout when open site")
                 print(self.driver.title)
@@ -133,6 +156,8 @@ class PaperDownload:
                 # English
                 print("The name is English")
                 author_list = [name.strip() for name in author.split(",")]
+                author_list[-1] = author_list[-1].replace("…", "")
+                print(author_list)
                 if self.name_en in author_list:
                     result_cid = cid
                     break
@@ -140,6 +165,8 @@ class PaperDownload:
                 # Chinese
                 print("The name is Chinese")
                 author_list = [name.strip() for name in author.split("，")]
+                author_list[-1] = author_list[-1].replace("…", "")
+                print(author_list)
                 if self.name_ch in author_list:
                     result_cid = cid
                     break
@@ -147,6 +174,7 @@ class PaperDownload:
                 # There is only one author
                 print("Only one name")
                 author_list = author
+                print(author_list)
                 if self.name_en in author_list:
                     result_cid = cid
                     break
@@ -213,7 +241,6 @@ class PaperDownload:
             print("Timeout when open cite")
             raise RuntimeError
 
-
     def start_download(self):
         while True:
             self.wait_random_time()
@@ -259,8 +286,9 @@ class PaperDownload:
 if __name__ == "__main__":
     name_en = "S Wang"
     name_ch = "王爽"
-    tile_list = "data/list.txt"
     # tile_list = "data/list.txt"
+    # tile_list = "data/list.txt"
+    tile_list = "data/test_list2.txt"
 
     result_path = "data2/result2/"
     try:
