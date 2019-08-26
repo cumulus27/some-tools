@@ -9,6 +9,7 @@ import re
 import time
 import random
 import difflib
+import platform
 import urllib
 import urllib.parse
 import urllib.request
@@ -40,7 +41,14 @@ class PaperDownload:
         # options.headless = True  # do not open UI
         # options.add_argument('--proxy-server=socks5://127.0.0.1:1080')
 
-        driver = webdriver.Chrome("tools/chromedriver", chrome_options=options)
+        system = platform.system()
+        if system == "Windows":
+            driver = webdriver.Chrome("tools/Windows/chromedriver.exe", chrome_options=options)
+        elif system == "Linux":
+            driver = webdriver.Chrome("tools/Linux/chromedriver", chrome_options=options)
+        else:
+            driver = None
+
         # driver.get("https://scholar.google.com")
         # driver.get("https://e.glgoo.top/scholar/")
         driver.get("http://so.hiqq.com.cn/")
