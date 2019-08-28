@@ -1,0 +1,5 @@
+Adaptive Nonlocal Spatial–Spectral Kernel for Hyperspectral Imagery Classification -> 2016 -> Jianing Wang, Licheng Jiao, Shuang Wang,
+Adaptive unsupervised classification of polarimetric SAR images using the improved affinity propagation clustering algorithm -> 2016 -> Hua, Wenqiang, Wang, Shuang, Liu, Hongying,
+一种新的基于Wishart MRF的全极化SAR图像分类方法 -> 2014 -> 张爽, 王爽, 焦李成,
+基于双边滤波的极化SAR相干斑抑制 -> 2014 -> 王爽, 于佳平, 刘坤,
+基于矩阵对数累积量的极化合成孔径雷达数据去噪方法 -> 2014 ->
