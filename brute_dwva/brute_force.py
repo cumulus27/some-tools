@@ -4,8 +4,8 @@
 from bs4 import BeautifulSoup
 import requests
 
-host = "127.0.0.1:88"
-php_session_id = "cjt7514r8paj5r89qprom1on78"
+host = "172.105.194.56"
+php_session_id = "suo8a94n6jrd5thpk1qu9o63h2"
 
 # host = "45.63.107.103"
 # php_session_id = "7h8t6sbk3gejnvj00cdk6kcli4"
@@ -75,7 +75,7 @@ def send_test_request(test_url, headers):
     res = requests.get(test_url, headers=headers)
     print(res.status_code)
     the_page = res.content.decode("utf-8")
-    print(the_page)
+    # print(the_page)
 
     return len(the_page)
 
